@@ -6,44 +6,6 @@ end
 
 local tree_cb = tree_c.nvim_tree_callback
 
-local function tree_opt(key, value)
-	vim.g["nvim_tree_" .. key] = value
-end
-
-tree_opt("indent_markers", 1)
-tree_opt("git_hl", 1)
-tree_opt("highlight_opened_files", 0)
-tree_opt("root_folder_modifier", table.concat{ ":t:gs?$/..", string.rep(" ", 1000), "?:gs?^??" })
-tree_opt("add_trailing", 0)
-
-tree_opt("show_icons", {
-	git = 1,
-	folders = 1,
-	files = 1,
-})
-
-tree_opt("icons", {
-	default = " ",
-	symlink = "",
-	git = {
-		unstaged = "✗",
-		staged = "✓",
-		unmerged = "",
-		renamed = "➜",
-		untracked = "★",
-		deleted = "",
-		ignored = "◌",
-	},
-	folder = {
-		default = "",
-		open = "ﱮ",
-		empty = "",
-		empty_open = "",
-		symlink = "",
-		symlink_open = "",
-	}
-})
-
 local tree_mappings = {
 	{ key = {"<CR>", "o", "<2-LeftMouse>"}, cb = tree_cb("edit") },
 	{ key = {"<2-RightMouse>", "<C-]>"}, cb = tree_cb("cd") },
@@ -88,7 +50,15 @@ tree.setup {
 	auto_close         = false,
 	hijack_cursor      = true,
 	hijack_unnamed_buffer_when_opening = false,
+	highlight_opened_file = false,
+	root_folder_modifier = table.concat {
+		":t:gs?$/..",
+		string.rep(" ", 1000),
+		"?:gs?^??"
+	},
 	ignore_ft_on_setup = { "dashboard" },
+	indent_markers     = true,
+	add_trailing       = false,
 	update_cwd         = true,
 	update_to_bif_dir = {
 		enable     = true,
@@ -109,7 +79,33 @@ tree.setup {
 	},
 	git = {
 		ignore = true,
-	}
+	},
+	icons = {
+		default = " ",
+		symlink = "",
+		git = {
+			unstaged = "✗",
+			staged = "✓",
+			unmerged = "",
+			renamed = "➜",
+			untracked = "★",
+			deleted = "",
+			ignored = "◌",
+		},
+		folder = {
+			default = "",
+			open = "ﱮ",
+			empty = "",
+			empty_open = "",
+			symlink = "",
+			symlink_open = "",
+		}
+	},
+	show_icons = {
+		git = 1,
+		folders = 1,
+		files = 1,
+	},
 }
 
 --vim.cmd("au BufEnter,BufWinEnter,WinEnter,CmdwinEnter * if bufname('%') == 'NvimTree' | set laststatus=0 | else | set laststatus=2 | endif")

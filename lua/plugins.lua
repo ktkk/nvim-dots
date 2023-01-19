@@ -50,11 +50,15 @@ return require("packer").startup(function(use)
 		config = function() require("plugins/treesitter") end,
 	}
 
-	-- Nvim tree sidebar
 	use {
-		"kyazdani42/nvim-tree.lua",
-		config = function() require("plugins/nvimtree") end,
+		"DingDean/wgsl.vim",
 	}
+
+	-- Nvim tree sidebar
+	--use {
+	--	"kyazdani42/nvim-tree.lua",
+	--	config = function() require("plugins/nvimtree") end,
+	--}
 
 	-- Completion
 	use {
@@ -86,6 +90,7 @@ return require("packer").startup(function(use)
 	use {
 		"williamboman/nvim-lsp-installer",
 		event = "BufEnter",
+        config = function() require("plugins/lsp-installer") end
 	}
 
 	use {
