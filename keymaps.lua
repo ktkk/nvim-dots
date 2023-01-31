@@ -1,23 +1,23 @@
-local api = vim.api
+local function keymap(mode, lhs, rhs, additional_options)
+	local options = {
+		noremap = true,
+		silent = true,
+	}
+	if additional_options then
+		options = vim.tbl_extend("force", options, additional_options)
+	end
 
--- Map helper function
-local function map(mode, lhs, rhs, opts)
-	local options = { noremap = true }
-	if opts then options = vim.tbl_extend("force", options, opts) end
-	api.nvim_set_keymap(mode, lhs, rhs, options)
+	vim.api.nvim_set_keymap(mode, lhs, rhs, options)
 end
 
--- Normal mode mappings
-map('n', "<C-t>", ":sp | term<CR>") -- Open term with C-t
-map('t', "<Esc><Esc>", "<C-\\><C-n>")
+keymap('n', "<C-t>", ":sp | term<CR>") -- Open term with C-t
+keymap('t', "<Esc><Esc>", "<C-\\><C-n>")
 
-map('n', "<M-j>", ":m .+1<CR>==") -- Visual Studio style line moving
-map('n', "<M-k>", ":m .-2<CR>==")
+keymap('n', "<M-j>", ":m .+1<CR>==") -- Visual Studio style line moving
+keymap('n', "<M-k>", ":m .-2<CR>==")
+keymap('v', "<M-j>", ":m '>+1<CR>gv=gv")
+keymap('v', "<M-k>", ":m '>-2<CR>gv=gv")
 
-map('n', "<C-b>", ":make<CR>") -- Invoke make with C-b
+keymap('n', "<C-b>", ":make<CR>") -- Invoke make with C-b
 
--- Visual mode mappings
-map('v', "<M-j>", ":m '>+1<CR>gv=gv") -- Visual Studio style line moving
-map('v', "<M-k>", ":m '>-2<CR>gv=gv")
-
-map('v', "<C-c>", "\"*y :let @+=@*<CR>")
+keymap('v', "<C-c>", "\"*y :let @+=@*<CR>") -- Invoke regular copy with C-c

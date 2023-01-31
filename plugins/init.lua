@@ -1,111 +1,148 @@
-local execute = vim.api.nvim_command
-local fn = vim.fn
+local install_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
 
-local install_path = fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
-
-if fn.empty(fn.glob(install_path)) > 0 then -- If packer is not already present
-	execute("!git clone https://github.com/wbthomason/packer.nvim" .. ' ' .. install_path)
-	execute("packadd packer.nvim")
+local bootstrap
+if vim.fn.empty(vim.fn.glob(install_path)) > 0 then -- If packer is not already present
+	bootstrap = vim.fn.system({
+		"git", "clone", "--depth", "1",
+		"https://github.com/wbthomason/packer.nvim",
+		dir,
+	})
+	vim.api.nvim_command("packadd packer.nvim")
 end
 
-vim.cmd("autocmd BufWritePost plugins.lua PackerCompile") -- Recompile packer when this file gets edited
+vim.api.nvim_create_autocmd( -- Recompile packer when this file gets edited
+	{
+		"BufWritePost",
+	},
+	{
+		pattern = {
+			"plugins.lua",
+		},
+		callback = function()
+			vim.api.nvim_command("PackerCompile")
+		end,
+	}
+)
 
-return require("packer").startup(function(use)
+local present, packer = pcall(require, "packer")
+if not present then
+	return
+end
+
+packer.init({
+	display = {
+		open_fn = function()
+			return require("packer.util").float({
+				border = "rounded",
+			})
+		end
+	}
+})
+
+return packer.startup(function(use)
 	-- Let Packer manage itself
-	use {
+	use({
 		"wbthomason/packer.nvim",
 		event = "VimEnter"
-	}
+	})
 
 	-- Buffer bar
-	use {
+	use({
 		"akinsho/nvim-bufferline.lua",
-		config = function() require("plugins/bufferline") end,
-	}
+		config = function()
+			require("config/bufferline")
+		end,
+	})
 
 	-- Status line
-	use {
+	use({
 		"feline-nvim/feline.nvim",
-		config = function() require("plugins/feline") end,
-	}
-	-- use {
-	-- 	"glepnir/galaxyline.nvim",
-	-- 	config = function() require("plugins/galaxyline") end,
-	-- 	requires = { "kyazdani42/nvim-web-devicons", opt = true },
-	-- }
+		config = function()
+			require("config/feline")
+		end,
+	})
 
 	-- Theme
-	use {
+	use({
 		"nekonako/xresources-nvim",
-	}
+	})
 
-	use {
+	use({
 		"kyazdani42/nvim-web-devicons",
-		config = function() require("plugins/icons") end,
-	}
+		config = function()
+			require("config/icons")
+		end,
+	})
 
-	use {
+	use({
 		"nvim-treesitter/nvim-treesitter",
 		event = "BufRead",
-		config = function() require("plugins/treesitter") end,
-	}
+		run = "TSUpdate",
+		config = function()
+			require("config/treesitter")
+		end,
+	})
 
-	use {
+	use({
 		"DingDean/wgsl.vim",
-	}
-
-	-- Nvim tree sidebar
-	--use {
-	--	"kyazdani42/nvim-tree.lua",
-	--	config = function() require("plugins/nvimtree") end,
-	--}
+	})
 
 	-- Completion
-	use {
+	use({
 		"hrsh7th/nvim-cmp",
-		config = function() require("plugins/cmp") end,
-	}
+		config = function()
+			require("config/cmp")
+		end,
+	})
 
-	use {
+	use({
 		"hrsh7th/cmp-nvim-lsp",
 		after = "nvim-cmp",
-	}
+	})
 
-	use {
+	use({
+		"hrsh7th/cmp-nvim-lsp-signature-help",
+		after = "nvim-cmp",
+	})
+
+	use({
 		"hrsh7th/cmp-buffer",
 		after = "nvim-cmp",
-	}
+	})
 
-	use {
+	use({
 		"hrsh7th/cmp-path",
 		after = "nvim-cmp",
-	}
+	})
 
-	use {
+	use({
 		"hrsh7th/cmp-cmdline",
 		after = "nvim-cmp",
-	}
+	})
 
 	-- LSP stuff
-	use {
-		"williamboman/nvim-lsp-installer",
-		event = "BufEnter",
-        config = function() require("plugins/lsp-installer") end
-	}
+	use({
+		"williamboman/mason.nvim",
+        config = function()
+			require("config/mason")
+		end
+	})
 
-	use {
+	use({
 		"neovim/nvim-lspconfig",
-		after = "nvim-lsp-installer",
-		config = function() require("plugins/lsp") end,
-	}
+		after = "mason.nvim",
+		config = function()
+			require("plugins/lsp")
+		end,
+	})
 
-	use {
-		"ray-x/lsp_signature.nvim",
-	}
+	use({
+		"onsails/lspkind-nvim",
+	})
 
-	use {
+	use({
 		"hrsh7th/vim-vsnip",
-	}
+	})
 
 	use {
 		"hrsh7th/vim-vsnip-integ",

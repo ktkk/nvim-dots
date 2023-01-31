@@ -1,49 +1,39 @@
-local cmd = vim.cmd
+local options = {
+    mouse = "a",
 
-local scopes = { o = vim.o, b = vim.bo, w = vim.wo }
-local function opt(scope, key, value)
-    scopes[scope][key] = value
-    if scope ~= 'o' then scopes['o'][key] = value end -- also turn on value for other scopes
+    tabstop = 2,
+    shiftwidth = 2,
+    smartindent = true,
+    splitright = true,
+    autoindent = true,
+    expandtab = true,
+
+    number = true,
+    relativenumber = true,
+    numberwidth = 3,
+    signcolumn = "yes:1",
+
+    scrolloff = 8,
+    wrap = true,
+    ruler = true,
+
+    hidden = true,
+
+    updatetime = 500,
+    showmode = false,
+    termguicolors = true,
+
+    list = true,
+    listchars = {
+        tab = "→ ",
+        space = "·",
+        trail = "+",
+        nbsp = "␣",
+        precedes = "⇥",
+        extends = "⇤"
+    },
+}
+
+for key, value in pairs(options) do
+    vim.opt[key] = value
 end
-
-local set = vim.opt
-
--- Commands
-cmd("syntax on")
-cmd("filetype plugin indent on")
-
-cmd("highlight ExtraWhiteSpace ctermbg=red guibg=red")
-cmd("match ExtraWhiteSpace /\\s\\+$/")
-
--- Options
-opt('o', "hidden", true)
-opt('o', "splitbelow", true)
-opt('o', "splitright", true)
-opt('o', "showmode", false)
-opt('o', "ruler", true)
-opt('o', "mouse", 'a')
-opt('o', "updatetime", 500)
-opt('o', "termguicolors", true)
-
-opt('b', "smartindent", true)
-opt('b', "autoindent", true)
-opt('b', "tabstop", 4)
-opt('b', "shiftwidth", 4)
-opt('b', "expandtab", true)
-
-opt('w', "number", true)
-opt('w', "relativenumber", true)
-opt('w', "numberwidth", 3)
-opt('w', "wrap", true)
-opt('w', "signcolumn", "yes:1")
-
--- Global options
-set.list = true
-set.listchars = { tab = "→ ", space = "·", trail = "+", nbsp = "␣", precedes = "⇥", extends = "⇤" }
-
-vim.api.nvim_create_autocmd(
-    { "BufWritePre" },
-    { callback = function()
-        vim.lsp.buf.format()
-    end }
-)
