@@ -1,14 +1,27 @@
-local present1, lspconfig = pcall(require, "lspconfig")
-local present2, lspinstall = pcall(require, "nvim-lsp-installer")
-local present3, lspsignature = pcall(require, "lsp_signature")
-if not (present1 or present2 or present3) then
+local present1, mason = pcall(require, "mason")
+local present2, mason_lspconfig = pcall(require, "mason-lspconfig")
+local present3, lspconfig = pcall(require, "lspconfig")
+local present4, lspsignature = pcall(require, "lsp_signature")
+if not (present1 or present2 or present3 or present4) then
     return
 end
 
 local function on_attach(client, bufnr)
 end
 
-lspinstall.setup()
+mason.setup()
+mason_lspconfig.setup({
+    ensure_installed = {
+        "html",
+        "clangd",
+        "cmake",
+        "cssls",
+        "jedi_language_server",
+        "lua_ls",
+        "denols",
+        "rust_analyzer",
+    },
+})
 
 lspconfig.html.setup({
     on_attach = on_attach,
@@ -30,7 +43,7 @@ lspconfig.jedi_language_server.setup({
     on_attach = on_attach,
     single_file_support = true,
 })
-lspconfig.sumneko_lua.setup({
+lspconfig.lua_ls.setup({
     on_attach = on_attach,
     single_file_support = true,
 })

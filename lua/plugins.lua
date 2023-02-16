@@ -1,143 +1,173 @@
-local execute = vim.api.nvim_command
-local fn = vim.fn
+local install_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
 
-local install_path = fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
-
-if fn.empty(fn.glob(install_path)) > 0 then -- If packer is not already present
-	execute("!git clone https://github.com/wbthomason/packer.nvim" .. ' ' .. install_path)
-	execute("packadd packer.nvim")
+local bootstrap
+if vim.fn.empty(vim.fn.glob(install_path)) > 0 then -- If packer is not already present
+    bootstrap = vim.fn.system({
+        "git", "clone", "--depth", "1",
+        "https://github.com/wbthomason/packer.nvim",
+        install_path,
+    })
+    vim.api.nvim_command("packadd packer.nvim")
 end
 
-vim.cmd("autocmd BufWritePost plugins.lua PackerCompile") -- Recompile packer when this file gets edited
+vim.api.nvim_create_autocmd( -- Recompile packer when this file gets edited
+    {
+        "BufWritePost",
+    },
+    {
+        pattern = {
+            "plugins.lua",
+        },
+        callback = function()
+            vim.api.nvim_command("PackerCompile")
+        end,
+    }
+)
 
-return require("packer").startup(function(use)
-	-- Let Packer manage itself
-	use {
-		"wbthomason/packer.nvim",
-		event = "VimEnter"
-	}
+local present, packer = pcall(require, "packer")
+if not present then
+    return
+end
 
-	-- Buffer bar
-	use {
-		"akinsho/nvim-bufferline.lua",
-		config = function() require("plugins/bufferline") end,
-	}
+packer.init({
+    display = {
+        open_fn = function()
+            return require("packer.util").float({
+                border = "rounded"
+            })
+        end,
+    },
+})
 
-	-- Status line
-	use {
-		"feline-nvim/feline.nvim",
-		config = function() require("plugins/feline") end,
-	}
-	-- use {
-	-- 	"glepnir/galaxyline.nvim",
-	-- 	config = function() require("plugins/galaxyline") end,
-	-- 	requires = { "kyazdani42/nvim-web-devicons", opt = true },
-	-- }
+return packer.startup(function(use)
+    -- Let Packer manage itself
+    use({
+        "wbthomason/packer.nvim",
+        event = "VimEnter"
+    })
 
-	-- Theme
-	use {
-		"nekonako/xresources-nvim",
-	}
+    -- Buffer bar
+    use({
+        "akinsho/nvim-bufferline.lua",
+        config = function() require("plugins/bufferline") end,
+    })
 
-	use {
-		"kyazdani42/nvim-web-devicons",
-		config = function() require("plugins/icons") end,
-	}
+    -- Status line
+    use({
+        "feline-nvim/feline.nvim",
+        config = function() require("plugins/feline") end,
+    })
+    -- use({
+    -- 	"glepnir/galaxyline.nvim",
+    -- 	config = function() require("plugins/galaxyline") end,
+    -- 	requires = { "kyazdani42/nvim-web-devicons", opt = true },
+    -- })
 
-	use {
-		"nvim-treesitter/nvim-treesitter",
-		event = "BufRead",
-		config = function() require("plugins/treesitter") end,
-	}
+    -- Theme
+    use({
+        "nekonako/xresources-nvim",
+    })
 
-	use {
-		"DingDean/wgsl.vim",
-	}
+    use({
+        "kyazdani42/nvim-web-devicons",
+        config = function() require("plugins/icons") end,
+    })
 
-	-- Nvim tree sidebar
-	--use {
-	--	"kyazdani42/nvim-tree.lua",
-	--	config = function() require("plugins/nvimtree") end,
-	--}
+    use({
+        "nvim-treesitter/nvim-treesitter",
+        event = "BufRead",
+        config = function() require("plugins/treesitter") end,
+    })
 
-	-- Completion
-	use {
-		"hrsh7th/nvim-cmp",
-		config = function() require("plugins/cmp") end,
-	}
+    use({
+        "DingDean/wgsl.vim",
+    })
 
-	use {
-		"hrsh7th/cmp-nvim-lsp",
-		after = "nvim-cmp",
-	}
+    -- Nvim tree sidebar
+    --use({
+    --	"kyazdani42/nvim-tree.lua",
+    --	config = function() require("plugins/nvimtree") end,
+    --})
 
-	use {
-		"hrsh7th/cmp-buffer",
-		after = "nvim-cmp",
-	}
+    -- Completion
+    use({
+        "hrsh7th/nvim-cmp",
+        config = function() require("plugins/cmp") end,
+    })
 
-	use {
-		"hrsh7th/cmp-path",
-		after = "nvim-cmp",
-	}
+    use({
+        "hrsh7th/cmp-nvim-lsp",
+        after = "nvim-cmp",
+    })
 
-	use {
-		"hrsh7th/cmp-cmdline",
-		after = "nvim-cmp",
-	}
+    use({
+        "hrsh7th/cmp-buffer",
+        after = "nvim-cmp",
+    })
 
-	-- LSP stuff
-	use {
-		"williamboman/nvim-lsp-installer",
-		event = "BufEnter",
-        config = function() require("plugins/lsp-installer") end
-	}
+    use({
+        "hrsh7th/cmp-path",
+        after = "nvim-cmp",
+    })
 
-	use {
-		"neovim/nvim-lspconfig",
-		after = "nvim-lsp-installer",
-		config = function() require("plugins/lsp") end,
-	}
+    use({
+        "hrsh7th/cmp-cmdline",
+        after = "nvim-cmp",
+    })
 
-	use {
-		"ray-x/lsp_signature.nvim",
-	}
+    -- LSP stuff
+    use({
+        "williamboman/mason.nvim",
+    })
 
-	use {
-		"hrsh7th/vim-vsnip",
-	}
+    use({
+        "williamboman/mason-lspconfig.nvim",
+    })
 
-	use {
-		"hrsh7th/vim-vsnip-integ",
-	}
+    use({
+        "neovim/nvim-lspconfig",
+        config = function() require("plugins/lsp") end,
+    })
 
-	-- Git integration
-	use {
-		"lewis6991/gitsigns.nvim",
-		requires = {
-			"nvim-lua/plenary.nvim",
-		},
-		config = function() require("plugins/gitsigns") end,
-	}
+    use({
+        "ray-x/lsp_signature.nvim",
+    })
 
-	-- Convenience stuff
-	use {
-		"windwp/nvim-autopairs",
-		config = function() require("plugins/autopairs") end,
-	}
+    use({
+        "hrsh7th/vim-vsnip",
+    })
 
-	use {
-		"mhartington/formatter.nvim",
-		config = function() require("plugins/formatter") end,
-	}
+    use({
+        "hrsh7th/vim-vsnip-integ",
+    })
 
-	use {
-		"norcalli/nvim-colorizer.lua",
-		config = function() require("plugins/colorizer") end,
-	}
+    -- Git integration
+    use({
+        "lewis6991/gitsigns.nvim",
+        requires = {
+            "nvim-lua/plenary.nvim",
+        },
+        config = function() require("plugins/gitsigns") end,
+    })
 
-	use {
-		"wfxr/minimap.vim",
-		config = function() require("plugins/minimap") end,
-	}
+    -- Convenience stuff
+    use({
+        "windwp/nvim-autopairs",
+        config = function() require("plugins/autopairs") end,
+    })
+
+    use({
+        "mhartington/formatter.nvim",
+        config = function() require("plugins/formatter") end,
+    })
+
+    use({
+        "norcalli/nvim-colorizer.lua",
+        config = function() require("plugins/colorizer") end,
+    })
+
+    use({
+        "wfxr/minimap.vim",
+        config = function() require("plugins/minimap") end,
+    })
 end)
