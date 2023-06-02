@@ -20,6 +20,7 @@ mason_lspconfig.setup({
         "lua_ls",
         "denols",
         "rust_analyzer",
+        "gopls",
     },
 })
 
@@ -57,6 +58,10 @@ lspconfig.denols.setup({
     root_dir = lspconfig.util.root_pattern("deno.json", "deno.jsonc"),
 })
 lspconfig.rust_analyzer.setup({
+    on_attach = on_attach,
+    single_file_support = true,
+})
+lspconfig.gopls.setup({
     on_attach = on_attach,
     single_file_support = true,
 })

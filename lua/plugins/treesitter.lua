@@ -4,7 +4,7 @@ if not present then
 end
 
 ts_config.setup({
-    ensure_installed = { "c", "cpp", "lua", "rust" },
+    ensure_installed = { "c", "cpp", "lua", "rust", "graphql", "go" },
     highlight = {
         enable = true,
     },

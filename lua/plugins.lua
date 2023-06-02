@@ -170,4 +170,14 @@ return packer.startup(function(use)
         "wfxr/minimap.vim",
         config = function() require("plugins/minimap") end,
     })
+
+    -- Fluff
+    use({
+        "giusgad/pets.nvim",
+        requires = {
+            "giusgad/hologram.nvim",
+            "MunifTanjim/nui.nvim",
+        },
+        config = function() require("plugins/pets") end,
+    })
 end)

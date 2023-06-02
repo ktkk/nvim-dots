@@ -1,8 +1,8 @@
 local present, icons = pcall(require, "nvim-web-devicons")
 if not present then
-	return
+    return
 end
 
-icons.setup {
-	override = {}
-}
+icons.setup({
+    override = {}
+})
